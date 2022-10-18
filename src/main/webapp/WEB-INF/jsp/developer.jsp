@@ -10,14 +10,19 @@
 <%@include file="../include/navbar.jsp" %>
 
 <div id="headerwrap">
-    <div class="container">
+    <div class="container centered">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2 centered">
-                <h1>Страница разработчика</h1>
-            </div>
-            <div class="col-lg-8 col-lg-offset-2 centered">
-
-            </div>
+            <h1>Страница разработчика</h1>
+        </div>
+        <div class="row">
+            <form action="${pageContext.request.contextPath}/report" method="get" target="_blank">
+                <div class="form-group">
+                    <label for="username">Число оценок для агрегации</label>
+                    <input id="username" class="form-control"
+                           type="number" name="numMarks" required>
+                </div>
+                <button class="btn btn-primary" type="submit">Скачать отчет</button>
+            </form>
         </div>
     </div>
 </div>

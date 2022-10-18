@@ -3,12 +3,10 @@ package com.vgorash.datamarkup.controller;
 import com.vgorash.datamarkup.model.User;
 import com.vgorash.datamarkup.service.ImageService;
 import com.vgorash.datamarkup.service.UserService;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.util.Map;
@@ -63,6 +61,11 @@ public class MainController {
     @RequestMapping(method = RequestMethod.GET, path = "/developer")
     public String developer(){
         return "developer";
+    }
+
+    @RequestMapping(method = RequestMethod.GET, path = "/report", produces = "text/csv")
+    public @ResponseBody String report(@RequestParam int numMarks){
+        return imageService.createReport(numMarks);
     }
 
 }

@@ -42,13 +42,13 @@ public class ImageService {
     }
 
     public ImageContainer getImageForUser(User user){
-        List<Image> images = imageRepository.getImagesForUser(user.getUsername());
-        if(images.isEmpty()){
+        Optional<Image> imageOptional = imageRepository.getImagesForUser(user.getUsername());
+        if(imageOptional.isEmpty()){
             return null;
         }
         try{
             ByteArrayOutputStream output = new ByteArrayOutputStream();
-            Image image = images.get(0);
+            Image image = imageOptional.get();
             BufferedImage bufferedImage = ImageIO.read(new File(basePath + "/" + image.getFilepath()));
             ImageIO.write(bufferedImage, "png", output);
             ImageContainer container = new ImageContainer();
@@ -73,5 +73,32 @@ public class ImageService {
         mapping.setResult(result);
 
         mappingRepository.saveAndFlush(mapping);
+    }
+
+    public String createReport(int marksCount){
+        if(marksCount == 0){
+            throw new RuntimeException("zero marks count");
+        }
+        if(marksCount % 2 == 0){
+            marksCount--;
+        }
+        StringBuilder result = new StringBuilder();
+        List<Image> images = imageRepository.findAll();
+        for (Image image : images){
+            if(image.getMappings().size() >= marksCount){
+                int marksPositive = 0;
+                int marksNegative = 0;
+                for(int i=0; i<marksCount; i++){
+                    if(image.getMappings().get(i).isResult()) marksPositive++; else marksNegative++;
+                }
+                int mark = marksPositive > marksNegative ? 1:0;
+                result
+                        .append(image.getId()).append(",")
+                        .append(image.getFilepath()).append(",")
+                        .append(mark)
+                        .append("\n");
+            }
+        }
+        return result.toString();
     }
 }
