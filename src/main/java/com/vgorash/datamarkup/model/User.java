@@ -25,6 +25,8 @@ public class User implements UserDetails {
     private boolean isDeveloper;
     private boolean isAuthored;
 
+    private int numFails = 0;
+
     public User(){}
 
     public User(String username, String password){

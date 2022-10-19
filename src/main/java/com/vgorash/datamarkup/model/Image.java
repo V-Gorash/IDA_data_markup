@@ -17,6 +17,8 @@ public class Image {
 
     private String filepath;
 
+    private Boolean gt;
+
     @OneToMany(mappedBy = "image")
     private List<Mapping> mappings;
 }

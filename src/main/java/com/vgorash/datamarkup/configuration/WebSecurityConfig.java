@@ -12,8 +12,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception{
         http
-                .csrf().disable().authorizeRequests().antMatchers("/mapping").hasAuthority("ROLE_ACCESSOR")
-                .antMatchers("/developer").hasAuthority("ROLE_DEVELOPER")
+                .csrf().disable().authorizeRequests().antMatchers("/mapping", "/mapping/*").hasAuthority("ROLE_ACCESSOR")
+                .antMatchers("/developer", "/report").hasAuthority("ROLE_DEVELOPER")
                 .antMatchers("/").authenticated()
                 .anyRequest().permitAll()
                 .and().formLogin().loginPage("/auth").permitAll()

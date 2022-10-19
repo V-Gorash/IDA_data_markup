@@ -5,6 +5,7 @@ import com.vgorash.datamarkup.model.Mapping;
 import com.vgorash.datamarkup.model.User;
 import com.vgorash.datamarkup.repository.ImageRepository;
 import com.vgorash.datamarkup.repository.MappingRepository;
+import com.vgorash.datamarkup.repository.UserRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,9 +16,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class ImageService {
@@ -34,11 +33,14 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final MappingRepository mappingRepository;
+    private final UserRepository userRepository;
 
     public ImageService(ImageRepository imageRepository,
-                        MappingRepository mappingRepository){
+                        MappingRepository mappingRepository,
+                        UserRepository userRepository){
         this.imageRepository = imageRepository;
         this.mappingRepository = mappingRepository;
+        this.userRepository = userRepository;
     }
 
     public ImageContainer getImageForUser(User user){
@@ -67,6 +69,11 @@ public class ImageService {
         if(imageOptional.isEmpty()){
             throw new RuntimeException("Incorrect image ID!");
         }
+        if(!Objects.isNull(imageOptional.get().getGt())){
+            if(!imageOptional.get().getGt().equals(result)){
+                user.setNumFails(user.getNumFails() + 1);
+            }
+        }
         Mapping mapping = new Mapping();
         mapping.setImage(imageOptional.get());
         mapping.setUser(user);
@@ -85,11 +92,12 @@ public class ImageService {
         StringBuilder result = new StringBuilder();
         List<Image> images = imageRepository.findAll();
         for (Image image : images){
-            if(image.getMappings().size() >= marksCount){
+            if(image.getMappings().size() >= marksCount && Objects.isNull(image.getGt())){
                 int marksPositive = 0;
                 int marksNegative = 0;
+                List<Mapping> mappings = image.getMappings().stream().sorted(Comparator.comparingInt(a -> a.getUser().getNumFails())).toList();
                 for(int i=0; i<marksCount; i++){
-                    if(image.getMappings().get(i).isResult()) marksPositive++; else marksNegative++;
+                    if(mappings.get(i).isResult()) marksPositive++; else marksNegative++;
                 }
                 int mark = marksPositive > marksNegative ? 1:0;
                 result
