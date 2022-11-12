@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ImageService {
@@ -95,7 +96,7 @@ public class ImageService {
             if(image.getMappings().size() >= marksCount && Objects.isNull(image.getGt())){
                 int marksPositive = 0;
                 int marksNegative = 0;
-                List<Mapping> mappings = image.getMappings().stream().sorted(Comparator.comparingInt(a -> a.getUser().getNumFails())).toList();
+                List<Mapping> mappings = image.getMappings().stream().sorted(Comparator.comparingInt(a -> a.getUser().getNumFails())).collect(Collectors.toList());
                 for(int i=0; i<marksCount; i++){
                     if(mappings.get(i).isResult()) marksPositive++; else marksNegative++;
                 }
